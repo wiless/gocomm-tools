@@ -13,7 +13,32 @@ ApplicationWindow {
     height: mainLayout.implicitHeight + 2 * margin
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
+    statusBar: StatusBar {
+Timer {
+        id:timer
+                   interval: 1000; running:false; repeat: false
+                    onTriggered:  mystatusbar.statustext="By @iamssk"
+                }
 
+        RowLayout {
+            anchors.fill: parent
+
+            Label {
+                property string statustext:"By @iamssk"
+                id:mystatusbar
+                text: statustext
+            }
+            Text { id: time }
+            Item {
+                Timer {
+                    interval: 500; running: true; repeat: true
+                    onTriggered: time.text = Date().toString()
+                }
+
+
+            }
+        }
+    }
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
@@ -63,40 +88,40 @@ ApplicationWindow {
                 Label { width:100;id:numOutputPins; text: "Output Pins" }
                 Label { width:100;text: "Modules" }
                 SpinBox {Layout.fillWidth:true;   id:spinInPinCount;value:chipInfo.inPinCount
-                   onEditingFinished:
-                   {
-                       inputPins.resize(value)    
+                 onEditingFinished:
+                 {
+                     inputPins.resize(value)    
 
 
-                   }
-               }            
-               SpinBox {
-                   Layout.fillWidth:true;  id:spinOutPinCount;value:chipInfo.outPinCount
-                  onEditingFinished:
-                  {
-                      outputPins.resize(value)
-                  }
-                }
+                 }
+             }            
+             SpinBox {
+                 Layout.fillWidth:true;  id:spinOutPinCount;value:chipInfo.outPinCount
+                 onEditingFinished:
+                 {
+                  outputPins.resize(value)
+              }
+          }
 
-           SpinBox { Layout.fillWidth:true; id:spinModuleCount;value:chipInfo.moduleCount;minimumValue:1
+          SpinBox { Layout.fillWidth:true; id:spinModuleCount;value:chipInfo.moduleCount;minimumValue:1
               onEditingFinished:
               {
-               modules.resize(value)    
-           }
+                 modules.resize(value)    
+             }
 
-       }
+         }
 
-       Binding { target:chipInfo; property:"message"; value: messagebox.text }
-       // Binding { target:chipInfo; property:"inPinCount"; value: spinInPinCount.value }
-       // Binding { target:chipInfo; property:"outPinCount"; value: spinOutPinCount.value }
-       // Binding { target:chipInfo; property:"moduleCount"; value: spinModuleCount.value }
-       Binding { target:chipInfo; property:"name"; value: chipname.text }
+         Binding { target:chipInfo; property:"message"; value: messagebox.text }
+         // Binding { target:chipInfo; property:"inPinCount"; value: spinInPinCount.value }
+         // Binding { target:chipInfo; property:"outPinCount"; value: spinOutPinCount.value }
+         // Binding { target:chipInfo; property:"moduleCount"; value: spinModuleCount.value }
+         Binding { target:chipInfo; property:"name"; value: chipname.text }
 
 
-    }
-}
+     }
+ }
 
-SplitView {
+ SplitView {
     Layout.fillWidth:true
     Layout.fillHeight:true
     // anchors.fill: parent
@@ -112,7 +137,7 @@ SplitView {
         opacity: 0.7
         Tab {
             title: "Input Pins"
-       //     Rectangle { color: "red" }
+            //     Rectangle { color: "red" }
 
             ListView {
                 id:inputpinlist
@@ -148,11 +173,11 @@ SplitView {
                         }
                     }
                     TextField { width:100;text: "ComplexBit"}
-                    }
-
                 }
 
-            }        
+            }
+
+        }        
         Tab {
             title: "Output Pins"
             ListView {
@@ -194,13 +219,13 @@ SplitView {
                         text: "ComplexBit"                                
 
                         
-                        }   
-                    }
-
+                    }   
                 }
+
             }
+        }
         Tab {
-            title: "Modules" 
+            title: "Modules"                            
             ListView {
                 id:modulelist
                 anchors.bottom: parent.bottom
@@ -208,69 +233,69 @@ SplitView {
                 width:parent.width
                 model: chipInfo.moduleCount
                 Row {
-                    id:titlebar
-                    Label{text:"Name"}
-                    Label{text:"InputPins"}
-                    Label{text:"OutputPins"}
-                }
-                delegate:
-                Row {
-                    id: rlayout
-                    // anchors.fill: parent
-                    spacing: 6                            
 
-                    TextField {
+                   Label{text:"Name"}
+                   Label{text:"InputPins"}
+                   Label{text:"OutputPins"}
+               }                       
+               delegate:
+               Row {
+                id: rlayout3
+                // anchors.fill: parent
+                spacing: 6                            
 
-                        text: modules.name(index)
-                        style: TextFieldStyle {
-                            textColor: "black"
-                            background: Rectangle {
-                                radius: 5
-                                color:"yellow"
-                                implicitWidth: 100
-                                implicitHeight: 24
-                                border.color: "blue"
-                                border.width: 1
-                            }
-                        }
-                        onEditingFinished:
-                        {
-                            console.debug("Calling Module fucntion")
-                            modules.update(index,text)
+                TextField {
+
+                    text: modules.name(index)
+                    style: TextFieldStyle {
+                        textColor: "black"
+                        background: Rectangle {
+                            radius: 5
+                            color:"yellow"
+                            implicitWidth: 100
+                            implicitHeight: 24
+                            border.color: "blue"
+                            border.width: 1
                         }
                     }
-                    TextField {
-                        width:100
-                        text: modules.inPins
-                        onEditingFinished:
-                        {
-                            console.debug("Calling Module fucntion")
-                            modules.updatePins(index,text,true)
-                        }
-                        
-                    }   
-                    TextField {
-                        width:100
-                        text: modules.outPins                                
-                        onEditingFinished:
-                        {
-                            console.debug("Calling Module fucntion")
-                            modules.updatePins(index,text,false)
-                        }
-                    }   
+                    onEditingFinished:
+                    {
+                        console.debug("Calling Module fucntion")
+                        modules.update(index,text)
+                    }
                 }
+                TextField {
+                    // width:100
+                    text: modules.iPins(index)
+                    onEditingFinished:
+                    {
+                        console.debug("Calling Module fucntion")
+                        modules.updatePins(index,text,true)
+                    }
 
+                }   
+                TextField {
+                    // width:100
+                    text: modules.oPins(index)                                
+                    onEditingFinished:
+                    {
+                        console.debug("Calling Module fucntion")
+                        modules.updatePins(index,text,false)
+                    }
+                }   
             }
 
         }
+
     }
-    TextArea {
-        id:messagebox 
-        text:"chipInfo.message "
-        Layout.minimumHeight: 30
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-    }
+}
+TextArea {
+    id:messagebox 
+    text:"chipInfo.message "
+    Layout.minimumHeight: 30
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+}
 
 }
 
@@ -298,11 +323,18 @@ FileDialog {
     selectFolder:false
     selectMultiple:false
     onAccepted: {
-        console.log("You chose: " + fileDialog.fileUrls)
+        console.log("You chose: " + fileDialog.fileUrl)
+        timer.running=true
+        mystatusbar.statustext="Saved to "+fileDialog.fileUrl
+        
+
+
         chipInfo.saveAs(fileDialog.fileUrl)
+
 
         // Qt.quit()
     }
+    
     onRejected: {
         console.log("Canceled")
         // Qt.quit()

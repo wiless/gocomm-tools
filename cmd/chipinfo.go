@@ -77,8 +77,8 @@ func (q *qmlChip) Generate() {
 	q.Pins = append(inpins.data, outpins.data...)
 	q.Modules = modules.data
 	for i := 0; i < len(modules.data); i++ {
-		q.Modules[i].InPins = strings.Split(modules.inames[i], ",")
-		q.Modules[i].OutPins = strings.Split(modules.onames[i], ",")
+		q.Modules[i].InPins = strings.Split(modules.Inames[i], ",")
+		q.Modules[i].OutPins = strings.Split(modules.Onames[i], ",")
 	}
 
 	// jsondata, _ := json.Marshal(*q)
@@ -183,8 +183,8 @@ func run() error {
 
 type qmlModules struct {
 	data   []gocommui.JsonModule
-	inames []string
-	onames []string
+	Inames []string
+	Onames []string
 }
 
 func (q *qmlModules) Create(cnt int) {
@@ -197,15 +197,15 @@ func (q *qmlModules) Resize(cnt int) {
 	/// truncate
 	if currentcnt > cnt {
 		q.data = q.data[0:cnt]
-		q.inames = q.inames[0:cnt]
-		q.onames = q.onames[0:cnt]
+		q.Inames = q.Inames[0:cnt]
+		q.Onames = q.Onames[0:cnt]
 
 	} else if currentcnt < cnt {
 
 		/// extend
 
-		q.inames = append(q.inames, make([]string, cnt-currentcnt)...)
-		q.onames = append(q.onames, make([]string, cnt-currentcnt)...)
+		q.Inames = append(q.Inames, make([]string, cnt-currentcnt)...)
+		q.Onames = append(q.Onames, make([]string, cnt-currentcnt)...)
 		q.data = append(q.data, gocommui.DefaultModules(cnt-currentcnt, currentcnt)...)
 
 	}
@@ -214,11 +214,23 @@ func (q *qmlModules) Resize(cnt int) {
 
 }
 
+func (q *qmlModules) IPins(index int) string {
+	if len(q.Inames) <= index {
+		return ""
+	}
+	return (*q).Inames[index]
+}
 func (q *qmlModules) Name(index int) string {
 	if len(q.data) <= index {
 		return ""
 	}
 	return (*q).data[index].Name
+}
+func (q *qmlModules) OPins(index int) string {
+	if len(q.Onames) <= index {
+		return ""
+	}
+	return (*q).Onames[index]
 }
 
 func (q *qmlModules) Update(index int, value string) {
@@ -236,9 +248,9 @@ func (q *qmlModules) UpdatePins(index int, value string, input bool) {
 		return
 	}
 	if input {
-		(*q).inames[index] = value
+		(*q).Inames[index] = value
 	} else {
-		(*q).onames[index] = value
+		(*q).Onames[index] = value
 	}
 
 }
