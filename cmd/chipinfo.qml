@@ -9,7 +9,7 @@ ApplicationWindow {
     visible: true
     title: "Basic layouts"
     property int margin: 11
-    width: mainLayout.implicitWidth + 2 * margin
+    width: 517
     height: mainLayout.implicitHeight + 2 * margin
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
@@ -37,7 +37,10 @@ ApplicationWindow {
                     text: "Generate"
                     onClicked: {                        
                         inputPins.resize(spinInPinCount.value);
-                        // chipInfo.generate();   
+                        outputPins.resize(spinOutPinCount.value);
+                        modules.resize(spinModuleCount.value);
+                        fileDialog.open()
+                        chipInfo.generate();   
                     }
                 }
             }
@@ -60,125 +63,253 @@ ApplicationWindow {
                 Label { width:100;id:numOutputPins; text: "Output Pins" }
                 Label { width:100;text: "Modules" }
                 SpinBox {Layout.fillWidth:true;   id:spinInPinCount;value:chipInfo.inPinCount
-                     onEditingFinished:
-                     {
-                         inputPins.resize(value)    
+                   onEditingFinished:
+                   {
+                       inputPins.resize(value)    
+
+
+                   }
+               }            
+               SpinBox {
+                   Layout.fillWidth:true;  id:spinOutPinCount;value:chipInfo.outPinCount
+                  onEditingFinished:
+                  {
+                      outputPins.resize(value)
+                  }
+                }
+
+           SpinBox { Layout.fillWidth:true; id:spinModuleCount;value:chipInfo.moduleCount;minimumValue:1
+              onEditingFinished:
+              {
+               modules.resize(value)    
+           }
+
+       }
+
+       Binding { target:chipInfo; property:"message"; value: messagebox.text }
+       // Binding { target:chipInfo; property:"inPinCount"; value: spinInPinCount.value }
+       // Binding { target:chipInfo; property:"outPinCount"; value: spinOutPinCount.value }
+       // Binding { target:chipInfo; property:"moduleCount"; value: spinModuleCount.value }
+       Binding { target:chipInfo; property:"name"; value: chipname.text }
+
+
+    }
+}
+
+SplitView {
+    Layout.fillWidth:true
+    Layout.fillHeight:true
+    // anchors.fill: parent
+    orientation: Qt.Vertical
+
+    TabView {
+        antialiasing: true
+        z: 0
+        rotation: 0
+        tabsVisible: true
+        tabPosition: 1
+        frameVisible: false
+        opacity: 0.7
+        Tab {
+            title: "Input Pins"
+       //     Rectangle { color: "red" }
+
+            ListView {
+                id:inputpinlist
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                width:parent.width
+                model: chipInfo.inPinCount
+                delegate:
+                Row {
+                    id: rlayout1
+                    // anchors.fill: parent
+                    spacing: 6                            
+
+                    TextField {
+
+                        text: inputPins.name(index)
+                        style: TextFieldStyle {
+                            textColor: "black"
+                            background: Rectangle {
+                                radius: 5
+                                color:"green"
+                                implicitWidth: 100
+                                implicitHeight: 24
+                                border.color: "green"
+                                border.width: 1
+                            }
+                        }
+
+                        onEditingFinished:
+                        {
+                            console.debug("Calling update fucntion")
+                            inputPins.update(index,text)
+                        }
+                    }
+                    TextField { width:100;text: "ComplexBit"}
+                    }
+
+                }
+
+            }        
+        Tab {
+            title: "Output Pins"
+            ListView {
+                id:outputpinlist
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                width:parent.width
+                model: chipInfo.outPinCount
+                delegate:
+                Row {
+                    id: rlayout2
+                    // anchors.fill: parent
+                    spacing: 6                            
+
+                    TextField {
+
+                        text: outputPins.name(index)
+                        style: TextFieldStyle {
+                            textColor: "black"
+                            background: Rectangle {
+                                radius: 5
+                                color:"red"
+                                implicitWidth: 100
+                                implicitHeight: 24
+                                border.color: "green"
+                                border.width: 1
+                            }
+                        }
+
+                        onEditingFinished:
+                        {
+                            console.debug("Calling update fucntion")
+                            outputPins.update(index,text)
+                        }
+                    }
+                    TextField {
+                        width:100
+
+                        text: "ComplexBit"                                
 
                         
-                     }
-                }            
-                SpinBox {Layout.fillWidth:true;  id:spinOutPinCount;value:chipInfo.outPinCount}
-                SpinBox { Layout.fillWidth:true; id:spinModuleCount;value:chipInfo.moduleCount;minimumValue:1}
+                        }   
+                    }
 
-                Binding { target:chipInfo; property:"message"; value: messagebox.text }
-                // Binding { target:chipInfo; property:"inPinCount"; value: spinInPinCount.value }
-                Binding { target:chipInfo; property:"outPinCount"; value: spinOutPinCount.value }
-                Binding { target:chipInfo; property:"moduleCount"; value: spinModuleCount.value }
-                Binding { target:chipInfo; property:"name"; value: chipname.text }
-                
-
-                // TextArea {
-                    //     text: "ABA This widget spans over three rows in the GridLayout.\n"
-                    //         + "All items in the GridLayout are implicitly positioned from top to bottom."
-                    //     Layout.rowSpan: 3
-                    //     Layout.fillHeight: true
-                    //     Layout.fillWidth: true
-                    // }
                 }
             }
+        Tab {
+            title: "Modules" 
+            ListView {
+                id:modulelist
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                width:parent.width
+                model: chipInfo.moduleCount
+                Row {
+                    id:titlebar
+                    Label{text:"Name"}
+                    Label{text:"InputPins"}
+                    Label{text:"OutputPins"}
+                }
+                delegate:
+                Row {
+                    id: rlayout
+                    // anchors.fill: parent
+                    spacing: 6                            
 
-            SplitView {
-                Layout.fillWidth:true
-                Layout.fillHeight:true
-                // anchors.fill: parent
-                orientation: Qt.Vertical
+                    TextField {
 
-                TabView {
-                    Tab {
-                        title: "Input Pins"
-                        Rectangle { color: "red" }
-
-                        ListView {
-                            id:inputpinlist
-                            anchors.bottom: parent.bottom
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            width:parent.width
-                            model: chipInfo.inPinCount
-                            delegate:
-                            Row {
-                                id: rlayout
-                                 // anchors.fill: parent
-                                spacing: 6                            
-
-                                TextField {
-
-                                    text: inputPins.name(index)
-                                    style: TextFieldStyle {
-                                        textColor: "black"
-                                        background: Rectangle {
-                                            radius: 5
-                                            color:"green"
-                                            implicitWidth: 100
-                                            implicitHeight: 24
-                                            border.color: "green"
-                                            border.width: 1
-                                        }
-                                    }
-
-                                    onEditingFinished:
-                                    {
-                                        console.debug("Calling update fucntion")
-                                        inputPins.update(index,text)
-                                    }
-                                }
-                                TextField {
-                                    width:100
-
-                                    text: "ComplexBit"                                
-
-                                    // onAccepted:
-                                    // {
-                                        //     console.debug("Calling update fucntion")
-                                        //     inputPins.update(index,text)
-                                        // }
-                                    }   
-                                }
-
+                        text: modules.name(index)
+                        style: TextFieldStyle {
+                            textColor: "black"
+                            background: Rectangle {
+                                radius: 5
+                                color:"yellow"
+                                implicitWidth: 100
+                                implicitHeight: 24
+                                border.color: "blue"
+                                border.width: 1
                             }
-
                         }
-                        Tab {
-                            title: "Output Pins"
-                            TextArea { textColor: "blue";text:"All Output Pin info goes here" }
-                        }
-                        Tab {
-                            title: "Modules"
-                            TextArea { textColor: "green";text:"All Module realted info goes here" }
+                        onEditingFinished:
+                        {
+                            console.debug("Calling Module fucntion")
+                            modules.update(index,text)
                         }
                     }
-                    TextArea {
-                        id:messagebox 
-                        text:"chipInfo.message "
-                        Layout.minimumHeight: 30
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                    }
-
+                    TextField {
+                        width:100
+                        text: modules.inPins
+                        onEditingFinished:
+                        {
+                            console.debug("Calling Module fucntion")
+                            modules.updatePins(index,text,true)
+                        }
+                        
+                    }   
+                    TextField {
+                        width:100
+                        text: modules.outPins                                
+                        onEditingFinished:
+                        {
+                            console.debug("Calling Module fucntion")
+                            modules.updatePins(index,text,false)
+                        }
+                    }   
                 }
-
 
             }
 
-            MessageDialog {
-                id: messageDialog
-                visible:false //chipInfo.showDialog
-
-                title: "May I have your attention please"
-                text: "It's so cool that you are using Qt Quick."
-                onAccepted: {
-                    console.log("And of course you could only agree.")
-                    // Qt.quit()
-                }
-                // Component.onCompleted: visible = true
-            }
         }
+    }
+    TextArea {
+        id:messagebox 
+        text:"chipInfo.message "
+        Layout.minimumHeight: 30
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+    }
+
+}
+
+
+}
+
+MessageDialog {
+    id: messageDialog
+    visible:false //chipInfo.showDialog
+
+    title: "May I have your attention please"
+    text: "It's so cool that you are using Qt Quick."
+    onAccepted: {
+        console.log("And of course you could only agree.")
+        // Qt.quit()
+    }
+    // Component.onCompleted: visible = true
+}
+
+FileDialog {
+    id: fileDialog
+    title: "Save As"
+    visible:false
+    nameFilters : ["Json Files (*.json)"]
+    selectFolder:false
+    selectMultiple:false
+    onAccepted: {
+        console.log("You chose: " + fileDialog.fileUrls)
+        chipInfo.saveAs(fileDialog.fileUrl)
+
+        // Qt.quit()
+    }
+    onRejected: {
+        console.log("Canceled")
+        // Qt.quit()
+    }
+    // Component.onCompleted: visible = true
+}
+}
+
+
+

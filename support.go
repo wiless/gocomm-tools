@@ -77,12 +77,32 @@ type JsonChip struct {
 	WriteTestMain bool
 }
 
-func DefaultInputPins(cnt int, idOffset int) []JsonPin {
+func DefaultModules(cnt int, idOffset int) []JsonModule {
+	result := make([]JsonModule, cnt)
+	var defaultmodule JsonModule
+	defaultmodule.Id = 0
+	defaultmodule.Name = "module"
+	defaultmodule.Function = "modulateFn"
+	for i := 0; i < cnt; i++ {
+		result[i] = defaultmodule
+		result[i].Id = i + idOffset
+		result[i].Name += fmt.Sprintf("%d", result[i].Id)
+		defaultmodule.Function += fmt.Sprintf("%d", result[i].Id)
+	}
+	return result
+}
+
+func DefaultPins(cnt int, idOffset int, input bool) []JsonPin {
 	result := make([]JsonPin, cnt)
 	for i := 0; i < cnt; i++ {
 		result[i].Id = i + idOffset
-		result[i].Name = "InputPin" + fmt.Sprintf("%d", result[i].Id)
-		result[i].InputPin = true
+		result[i].InputPin = input
+		if input {
+			result[i].Name = "InputPin" + fmt.Sprintf("%d", result[i].Id)
+		} else {
+			result[i].Name = "OutputPin" + fmt.Sprintf("%d", result[i].Id)
+		}
+
 		result[i].ModuleName = ""
 	}
 	return result
@@ -100,7 +120,7 @@ func (j *JsonChip) SetInPinCount(cnt int) {
 
 	/// extend
 	if len(j.Pins) < cnt {
-		j.Pins = append(j.Pins, DefaultInputPins(cnt-len(j.Pins), len(j.Pins))...)
+		j.Pins = append(j.Pins, DefaultPins(cnt-len(j.Pins), len(j.Pins), true)...)
 		// t := make([]JsonPin, len(j.Pins), cnt)
 		// copy(t, s)
 		// j.Pins = t
