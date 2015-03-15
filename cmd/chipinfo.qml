@@ -35,9 +35,9 @@ ApplicationWindow {
                 Button {
                     id:okbutton
                     text: "Generate"
-                    onClicked: {
-                        chipInfo.createInputPins(spinInPinCount.value);
-                        chipInfo.generate();   
+                    onClicked: {                        
+                        inputPins.resize(spinInPinCount.value);
+                        // chipInfo.generate();   
                     }
                 }
             }
@@ -60,11 +60,12 @@ ApplicationWindow {
                 Label { width:100;id:numOutputPins; text: "Output Pins" }
                 Label { width:100;text: "Modules" }
                 SpinBox {Layout.fillWidth:true;   id:spinInPinCount;value:chipInfo.inPinCount
-                    onEditingFinished:
-                    {
-                        chipInfo.createInputPins(value);
+                     onEditingFinished:
+                     {
+                         inputPins.resize(value)    
+
                         
-                    }
+                     }
                 }            
                 SpinBox {Layout.fillWidth:true;  id:spinOutPinCount;value:chipInfo.outPinCount}
                 SpinBox { Layout.fillWidth:true; id:spinModuleCount;value:chipInfo.moduleCount;minimumValue:1}
@@ -98,13 +99,13 @@ ApplicationWindow {
                         Rectangle { color: "red" }
 
                         ListView {
-
+                            id:inputpinlist
                             anchors.bottom: parent.bottom
                             anchors.horizontalCenter: parent.horizontalCenter
                             width:parent.width
                             model: chipInfo.inPinCount
                             delegate:
-                            RowLayout {
+                            Row {
                                 id: rlayout
                                  // anchors.fill: parent
                                 spacing: 6                            
@@ -124,7 +125,7 @@ ApplicationWindow {
                                         }
                                     }
 
-                                    onAccepted:
+                                    onEditingFinished:
                                     {
                                         console.debug("Calling update fucntion")
                                         inputPins.update(index,text)
@@ -157,7 +158,7 @@ ApplicationWindow {
                     }
                     TextArea {
                         id:messagebox 
-                        text:chipInfo.message 
+                        text:"chipInfo.message "
                         Layout.minimumHeight: 30
                         Layout.fillHeight: true
                         Layout.fillWidth: true
@@ -170,7 +171,7 @@ ApplicationWindow {
 
             MessageDialog {
                 id: messageDialog
-                visible:chipInfo.showDialog
+                visible:false //chipInfo.showDialog
 
                 title: "May I have your attention please"
                 text: "It's so cool that you are using Qt Quick."
